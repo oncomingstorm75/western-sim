@@ -28,6 +28,13 @@ header h1 {
     margin: 10px 0;
 }
 
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
 .controls button {
     font-family: 'Rye', cursive;
     font-size: 1.2em;
@@ -37,10 +44,20 @@ header h1 {
     border: 2px solid var(--background-dark);
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-bottom: 10px;
 }
 .controls button:hover {
     background-color: #f1c40f;
+}
+
+.controls button.danger {
+    background-color: #a93226; /* Dark Red */
+    border-color: #641e16;
+    color: var(--text-primary);
+}
+
+.controls button.danger:hover {
+    background-color: #e74c3c;
+    color: var(--background-dark);
 }
 
 .container {
