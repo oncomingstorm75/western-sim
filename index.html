@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild West World Simulator</title>
+    <link rel="stylesheet" href="simulator-style.css">
+</head>
+<body>
+    <header>
+        <h1>Wild West World Simulator</h1>
+        <div class="controls">
+            <button id="simulate-btn">Simulate One Week</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="log-section">
+            <h2>Simulation Log</h2>
+            <div id="log-output" class="output-box">
+                Welcome! Your world is loaded. Click "Simulate One Week" to see what happens.
+            </div>
+        </section>
+
+        <section class="state-section">
+            <h2>Current World State</h2>
+            <div id="world-state-output" class="output-box">
+                Loading world state...
+            </div>
+        </section>
+    </main>
+
+    <script src="simulator.js"></script>
+</body>
+</html>
