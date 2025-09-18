@@ -1,6 +1,10 @@
-document.addEventListener('DOMContentLoaded', () => {
+// --- 1. FIREBASE IMPORTS (MUST BE AT THE TOP LEVEL) ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-    // --- 1. FIREBASE SETUP (CORRECTED for v9 Classic Scripts) ---
+// This function contains all of our app's logic.
+function initializeSimulator() {
+    // --- 2. FIREBASE CONFIG & INITIALIZATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyAh_wDgSsdpG-8zMmgcSVgyKl1IKOvD2mE",
         authDomain: "wild-west-map.firebaseapp.com",
@@ -11,17 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         appId: "1:255220822931:web:7e44db610fe44bd7f72e66",
         measurementId: "G-3SPWSXBRNE"
     };
-    
-    // Initialize the Firebase App from the global 'firebase' object
-    const app = firebase.initializeApp(firebaseConfig);
-    // Get the functions we need from the 'firebase.database' namespace
-    const { getDatabase, ref, onValue, set } = firebase.database;
-    // Get the database service instance
+    const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
-    // Create the reference to our 'world' data folder
     const dbRef = ref(database, 'world');
-    // --- END OF CORRECTION ---
 
+    // --- 3. DOM ELEMENT REFERENCES & STATE ---
     const simulateBtn = document.getElementById('simulate-btn');
     const logOutput = document.getElementById('log-output');
     const worldStateOutput = document.getElementById('world-state-output');
@@ -84,14 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { description: "A stranger dies of fright in James J. Junction. The only clue is an Ace of Spades in his hand.", effect: (w) => { if (w.people.blackjack_jack) w.people.blackjack_jack.location = "james_j_junction"; return "'Blackjack' Jack has claimed another victim."; } }
     ];
 
-    function initializeSimulator() {
+    function initialize() {
         onValue(dbRef, async (snapshot) => {
             const data = snapshot.val();
             if (data && data.locations) {
                 world = data;
                 logOutput.innerHTML = '<p>World state loaded from Firebase. Ready to simulate.</p>';
             } else {
-                logOutput.innerHTML = '<p>Firebase is empty or invalid. Seeding with initial world data from world-data.json...</p>';
+                logOutput.innerHTML = '<p>Firebase is empty or invalid. Seeding with initial world data...</p>';
                 try {
                     const response = await fetch('world-data.json');
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -182,5 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     simulateBtn.addEventListener('click', runSimulationTurn);
-    initializeSimulator();
-});
+    initialize();
+}
+
+// This event listener waits for the entire HTML document to be loaded, then runs our main function.
+document.addEventListener('DOMContentLoaded', initializeSimulator);
