@@ -1,10 +1,5 @@
-// --- 1. FIREBASE IMPORTS (MUST BE AT THE TOP LEVEL) ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
-// This function contains all of our app's logic.
-function initializeSimulator() {
-    // --- 2. FIREBASE CONFIG & INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. FIREBASE SETUP ---
     const firebaseConfig = {
         apiKey: "AIzaSyAh_wDgSsdpG-8zMmgcSVgyKl1IKOvD2mE",
         authDomain: "wild-west-map.firebaseapp.com",
@@ -15,17 +10,20 @@ function initializeSimulator() {
         appId: "1:255220822931:web:7e44db610fe44bd7f72e66",
         measurementId: "G-3SPWSXBRNE"
     };
-    const app = initializeApp(firebaseConfig);
+    
+    const app = firebase.initializeApp(firebaseConfig);
+    const { getDatabase, ref, onValue, set } = firebase.database;
     const database = getDatabase(app);
     const dbRef = ref(database, 'world');
-
-    // --- 3. DOM ELEMENT REFERENCES & STATE ---
+    
+    // --- DOM & STATE ---
     const simulateBtn = document.getElementById('simulate-btn');
+    const resetBtn = document.getElementById('reset-btn');
     const logOutput = document.getElementById('log-output');
     const worldStateOutput = document.getElementById('world-state-output');
     let world;
 
-    // --- THE FULL, UNABRIDGED EVENT TABLE ---
+    // --- FULL EVENT TABLE ---
     const eventTable = [
         // --- Chill & Community Events ---
         { description: "A gentle, soaking rain breaks the long dry spell.", effect: (w) => { Object.values(w.locations).forEach(l => l.state_tags = l.state_tags.filter(tag => tag !== "Drought-Stricken")); return "The land breathes a sigh of relief, and spirits are lifted."; } },
@@ -82,26 +80,40 @@ function initializeSimulator() {
         { description: "A stranger dies of fright in James J. Junction. The only clue is an Ace of Spades in his hand.", effect: (w) => { if (w.people.blackjack_jack) w.people.blackjack_jack.location = "james_j_junction"; return "'Blackjack' Jack has claimed another victim."; } }
     ];
 
-    function initialize() {
+    function initializeSimulator() {
         onValue(dbRef, async (snapshot) => {
             const data = snapshot.val();
             if (data && data.locations) {
                 world = data;
                 logOutput.innerHTML = '<p>World state loaded from Firebase. Ready to simulate.</p>';
             } else {
-                logOutput.innerHTML = '<p>Firebase is empty or invalid. Seeding with initial world data...</p>';
-                try {
-                    const response = await fetch('world-data.json');
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    world = await response.json();
-                    await set(dbRef, world);
-                    logOutput.innerHTML += '<p><strong>Success!</strong> Initial world state has been saved to Firebase.</p>';
-                } catch (e) {
-                    logOutput.innerHTML += `<p style="color: red;"><strong>Error:</strong> Could not load or seed world-data.json. ${e.message}</p>`;
-                }
+                logOutput.innerHTML = '<p>Firebase is empty or invalid. Seeding with initial world data from world-data.json...</p>';
+                await seedDatabase();
             }
             displayWorldState();
         });
+    }
+
+    async function seedDatabase() {
+        try {
+            const response = await fetch('world-data.json');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const pristineWorldData = await response.json();
+            await set(dbRef, pristineWorldData);
+            world = pristineWorldData;
+            logOutput.innerHTML += '<p><strong>Success!</strong> Initial world state has been saved to Firebase.</p>';
+        } catch (e) {
+            logOutput.innerHTML += `<p style="color: red;"><strong>Error:</strong> Could not load or seed world-data.json. ${e.message}</p>`;
+        }
+    }
+
+    async function resetWorld() {
+        if (!confirm("Are you sure you want to reset the world? All simulation progress will be lost.")) {
+            return;
+        }
+        logOutput.innerHTML = '<p>Resetting world to initial state...</p>';
+        await seedDatabase();
+        displayWorldState();
     }
 
     function displayWorldState() {
@@ -180,8 +192,7 @@ function initializeSimulator() {
     }
 
     simulateBtn.addEventListener('click', runSimulationTurn);
-    initialize();
-}
-
-// This event listener waits for the entire HTML document to be loaded, then runs our main function.
-document.addEventListener('DOMContentLoaded', initializeSimulator);
+    resetBtn.addEventListener('click', resetWorld);
+    
+    initializeSimulator();
+});
