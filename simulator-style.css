@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Rye&family=Merriweather:wght@400;700&display=swap');
+
+:root {
+    --background-dark: #2c2c2c;
+    --background-med: #3a3a3a;
+    --text-primary: #e0e0e0;
+    --border-color: #5a5a5a;
+    --accent-primary: #d4ac0d; /* Gold */
+}
+
+body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    font-family: 'Merriweather', serif;
+    margin: 0;
+}
+
+header {
+    background-color: var(--background-med);
+    padding: 10px 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+}
+
+header h1 {
+    font-family: 'Rye', cursive;
+    color: var(--accent-primary);
+    margin: 10px 0;
+}
+
+.controls button {
+    font-family: 'Rye', cursive;
+    font-size: 1.2em;
+    padding: 10px 20px;
+    background-color: var(--accent-primary);
+    color: var(--background-dark);
+    border: 2px solid var(--background-dark);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 10px;
+}
+.controls button:hover {
+    background-color: #f1c40f;
+}
+
+.container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+.log-section {
+    flex: 2;
+}
+.state-section {
+    flex: 1;
+}
+
+h2 {
+    font-family: 'Rye', cursive;
+    color: var(--accent-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.output-box {
+    background-color: var(--background-med);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    height: 65vh;
+    overflow-y: auto;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+.output-box p {
+    margin: 0 0 10px 0;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 10px;
+}
+.output-box h3 {
+    margin: 15px 0 5px 0;
+    color: var(--text-primary);
+    font-family: 'Merriweather', serif;
+    font-weight: bold;
+}
+.output-box ul {
+    list-style: none;
+    padding-left: 15px;
+}
+.output-box li {
+    margin-bottom: 5px;
+}
